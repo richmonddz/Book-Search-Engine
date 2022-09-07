@@ -12,13 +12,19 @@ const { typeDefs, resolvers } = require("./schemas");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: authMiddleware,
-});
+async function startServer() {
+  server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: authMiddleware,
+  });
 
-server.applyMiddleware({ app });
+  await server.start();
+  server.applyMiddleware({ app });
+  console.log(`Server ready at http://localhost:${PORT}${server.graphqlPath}`);
+}
+
+startServer();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
